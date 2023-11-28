@@ -1,0 +1,30 @@
+import pandas as pd
+
+def csv_to_xlsx(csv_file, xlsx_file):
+    try:
+        # Lê o arquivo CSV usando csv.reader e ignora linhas com erros
+        with open(csv_file, 'r', encoding='utf-8', errors='ignore') as file:
+            # Utiliza ponto e vírgula como delimitador e aspas duplas para delimitar campos
+            df = pd.read_csv(file, delimiter=';', quotechar='"')
+
+        # Divide o DataFrame em partes menores (por exemplo, de 1000 em 1000 linhas)
+        chunk_size = 1000
+        chunks = [df[i:i + chunk_size] for i in range(0, len(df), chunk_size)]
+
+        # Escreve cada parte em uma planilha do Excel separada
+        with pd.ExcelWriter(xlsx_file, engine='xlsxwriter') as writer:
+            for i, chunk in enumerate(chunks, start=1):
+                chunk.to_excel(writer, sheet_name=f'Sheet_{i}', index=False)
+
+        print(f'O arquivo Excel "{xlsx_file}" foi gerado com sucesso.')
+    except Exception as e:
+        print(f'Ocorreu um erro: {e}')
+
+# Substitua 'seu_arquivo.csv' pelo caminho do seu arquivo CSV
+arquivo_csv = 'entrada.csv'
+
+# Substitua 'saida.xlsx' pelo nome que deseja para o arquivo Excel de saída
+arquivo_xlsx = 'saida.xlsx'
+
+# Chama a função para converter o CSV para XLSX
+csv_to_xlsx(arquivo_csv, arquivo_xlsx)
